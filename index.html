@@ -384,7 +384,8 @@
       <div class="preview-container">
         <!-- Canvas 包裹器，會動態調整寬度 -->
         <div class="canvas-wrapper">
-          <canvas id="certCanvas"></canvas>
+          <canvas id="certCanvas" style="display: none;"></canvas>
+          <img id="certImage" style="display: block; width: 100%; height: auto;" alt="電子獎狀預覽">
         </div>
 
         <!-- 名字位置微調控制面板 -->
@@ -420,6 +421,9 @@
             <span>下載獎狀 (PNG)</span>
           </button>
         </div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 10px; text-align: center; width: 100%;">
+          💡 手機板提示：若下載按鈕無反應，可以直接<b>「長按上方獎狀」</b>並選擇<b>「儲存圖片」</b>即可！
+        </p>
       </div>
     </div>
 
@@ -452,6 +456,7 @@
     const downloadBtn = document.getElementById('downloadBtn');
     const canvas = document.getElementById('certCanvas');
     const ctx = canvas.getContext('2d');
+    const certImage = document.getElementById('certImage');
     
     // 微調控制項
     const rangePosY = document.getElementById('posY');
@@ -615,6 +620,9 @@
           ctx.fillText(line, w/2, startY + (index * lineHeight));
         });
       }
+      
+      // 更新 <img> 標籤的內容，讓手機可以直接長按儲存
+      certImage.src = canvas.toDataURL('image/png', 1.0);
     }
 
     // 繪製家長姓名的函式
