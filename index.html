@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>最佳教育夥伴 - 感謝回饋與獎狀系統</title>
+  <!-- Google Fonts: Noto Serif TC for elegant certificate text, Outfit for UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #c9a063; /* Premium Gold */
+      --primary-hover: #b08a51;
+      --bg: #0f172a; /* Slate 900 */
+      --card-bg: rgba(30, 41, 59, 0.7); /* Slate 800 with transparency */
+      --text: #f8fafc; /* Slate 50 */
+      --text-muted: #94a3b8; /* Slate 400 */
+      --border: rgba(201, 160, 99, 0.2);
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', 'Noto Serif TC', sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 10% 20%, rgba(201, 160, 99, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(30, 41, 59, 0.5) 0%, transparent 50%);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 800px;
+      perspective: 1000px;
+      margin: 20px 0;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 0 0 50px rgba(201, 160, 99, 0.05);
+      transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s;
+      transform-style: preserve-3d;
+    }
+
+    .card.hidden {
+      display: none;
+    }
+
+    /* Form Styles */
+    h1 {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-align: center;
+      margin-bottom: 10px;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      margin-bottom: 40px;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--primary);
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: white;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(201, 160, 99, 0.2);
+      background: rgba(15, 23, 42, 0.8);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .required-tag {
+      color: #ef4444;
+      margin-left: 4px;
+    }
+
+    .btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary) 0%, #b08a51 100%);
+      color: #0f172a;
+      border: none;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 15px rgba(201, 160, 99, 0.3);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(201, 160, 99, 0.5);
+      background: linear-gradient(135deg, #d9b275 0%, var(--primary) 100%);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      background: var(--text-muted);
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    /* Preview and Certificate Section */
+    .preview-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 25px;
+    }
+
+    .canvas-wrapper {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 40px rgba(201, 160, 99, 0.1);
+      border: 1px solid rgba(251, 191, 36, 0.2);
+      background: #fff; /* Canvas is drawn on white */
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    /* Customization Settings panel for Adjustments */
+    .settings-panel {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+      margin-top: 15px;
+    }
+
+    .settings-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    @media (max-width: 600px) {
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .setting-item {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .setting-item label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .setting-item label span {
+      color: var(--primary);
+    }
+
+    .setting-item input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+    }
+
+    .setting-item input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      transition: transform 0.1s;
+    }
+
+    .setting-item input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .setting-item input[type="color"] {
+      -webkit-appearance: none;
+      border: none;
+      width: 100%;
+      height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      background: none;
+    }
+
+    .action-buttons {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      width: 100%;
+    }
+
+    @media (max-width: 500px) {
+      .action-buttons {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(201, 160, 99, 0.1);
+      color: #fff;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      border: 3px solid rgba(15, 23, 42, 0.1);
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border-left-color: #0f172a;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Success State */
+    .success-alert {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid var(--success);
+      color: var(--success);
+      padding: 15px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      text-align: center;
+      margin-bottom: 20px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- 步驟一：家長填表卡片 -->
+    <div id="formCard" class="card">
+      <h1>最佳教育夥伴</h1>
+      <p class="subtitle">家長回饋收集 & 電子獎狀領取</p>
+      
+      <form id="feedbackForm">
+        <div class="form-group">
+          <label for="parentName">家長姓名 <span class="required-tag">*</span></label>
+          <input type="text" id="parentName" placeholder="請輸入您的姓名（將印製於獎狀上）" required autocomplete="name">
+        </div>
+        
+        <div class="form-group">
+          <label for="parentEmail">電子郵件信箱 <span class="required-tag">*</span></label>
+          <input type="email" id="parentEmail" placeholder="example@email.com（用於寄送或備份）" required autocomplete="email">
+        </div>
+        
+        <div class="form-group">
+          <label for="feedbackText">給老師的回饋 <span class="required-tag">*</span></label>
+          <textarea id="feedbackText" placeholder="寫下這兩年帶班過程中，您想對老師說的話、支持或建議..." required></textarea>
+        </div>
+        
+        <button type="submit" id="submitBtn" class="btn">
+          <span>送出回饋並生成獎狀</span>
+        </button>
+      </form>
+    </div>
+
+    <!-- 步驟二：獎狀預覽與下載卡片 -->
+    <div id="previewCard" class="card hidden">
+      <div class="success-alert">
+        <svg width="20" height="20" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+        <span>回饋已成功送出！這是您的專屬電子獎狀：</span>
+      </div>
+      
+      <div class="preview-container">
+        <!-- Canvas 包裹器，會動態調整寬度 -->
+        <div class="canvas-wrapper">
+          <canvas id="certCanvas"></canvas>
+        </div>
+
+        <!-- 名字位置微調控制面板 -->
+        <div class="settings-panel">
+          <div class="settings-title" onclick="toggleSettings()">
+            <span>🛠️ 獎狀姓名位置微調 (若格式不符可在此調整)</span>
+            <span id="toggleArrow">▼</span>
+          </div>
+          <div id="settingsContent" class="settings-grid">
+            <div class="setting-item">
+              <label for="posY">垂直位置: <span id="valPosY">53%</span></label>
+              <input type="range" id="posY" min="20" max="80" value="53">
+            </div>
+            <div class="setting-item">
+              <label for="posX">水平位置: <span id="valPosX">50%</span></label>
+              <input type="range" id="posX" min="30" max="70" value="50">
+            </div>
+            <div class="setting-item">
+              <label for="fontSize">字型大小: <span id="valFontSize">110px</span></label>
+              <input type="range" id="fontSize" min="50" max="200" value="110">
+            </div>
+            <div class="setting-item">
+              <label for="fontColor">字體顏色:</label>
+              <input type="color" id="fontColor" value="#8f6d3b">
+            </div>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button id="backBtn" class="btn btn-secondary">返回修改表單</button>
+          <button id="downloadBtn" class="btn">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+            <span>下載獎狀 (PNG)</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>班級經營工具 © 2026 | 設計自 Canva 模板與自動化系統</p>
+  </footer>
+
+  <script>
+    // ==========================================
+    // ⚙️ 設定區
+    // ==========================================
+    const CONFIG = {
+      // ⚠️ 請在此處填入您部署 Google Apps Script 後產生的網頁應用程式 URL
+      googleAppScriptUrl: "https://script.google.com/macros/s/AKfycbx1AzvQkzrBit8htHKLS34A4urFoV-zr_2iCUi6fGjzk6GA3Be-onCSC8r8CCMCUZn1/exec",
+      
+      // 空白獎狀的圖片檔名 (請將空白圖片放在與 index.html 相同的資料夾)
+      blankCertImage: "blank_cert.png"
+    };
+
+    // ==========================================
+    // 元素宣告
+    // ==========================================
+    const formCard = document.getElementById('formCard');
+    const previewCard = document.getElementById('previewCard');
+    const feedbackForm = document.getElementById('feedbackForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const backBtn = document.getElementById('backBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const canvas = document.getElementById('certCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    // 微調控制項
+    const rangePosY = document.getElementById('posY');
+    const rangePosX = document.getElementById('posX');
+    const rangeFontSize = document.getElementById('fontSize');
+    const colorFont = document.getElementById('fontColor');
+    
+    const valPosY = document.getElementById('valPosY');
+    const valPosX = document.getElementById('valPosX');
+    const valFontSize = document.getElementById('valFontSize');
+    
+    // 證書底圖物件
+    let certBgImage = new Image();
+    let isBgImageLoaded = false;
+    let currentParentName = "";
+
+    // ==========================================
+    // 頁面載入初始化
+    // ==========================================
+    // 預先載入背景圖
+    certBgImage.src = CONFIG.blankCertImage;
+    certBgImage.onload = function() {
+      isBgImageLoaded = true;
+      console.log("Blank certificate background loaded successfully!");
+      
+      // 動態根據載入底圖的高度，設定最適合的字型大小與滑桿範圍
+      const h = certBgImage.naturalHeight || 1357;
+      const defaultSize = Math.round(h * 0.085); // 約為高度的 8.5%
+      rangeFontSize.min = Math.round(h * 0.03);
+      rangeFontSize.max = Math.round(h * 0.18);
+      rangeFontSize.value = defaultSize;
+      valFontSize.innerText = defaultSize + "px";
+    };
+    certBgImage.onerror = function() {
+      isBgImageLoaded = false;
+      console.warn("Could not load blank_cert.png. Will generate a gorgeous vector placeholder instead.");
+    };
+
+    // ==========================================
+    // 表單提交事件
+    // ==========================================
+    feedbackForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('parentName').value.trim();
+      const email = document.getElementById('parentEmail').value.trim();
+      const feedback = document.getElementById('feedbackText').value.trim();
+      
+      currentParentName = name;
+      
+      // 禁用按鈕顯示載入中
+      submitBtn.disabled = true;
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<div class="spinner"></div> <span>資料傳送中，請稍候...</span>';
+      
+      // 1. 傳送資料到 Google Sheets
+      if (CONFIG.googleAppScriptUrl) {
+        try {
+          // 使用 no-cors 以防止 Google Redirect 導致的瀏覽器跨域擋下
+          await fetch(CONFIG.googleAppScriptUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name, email, feedback })
+          });
+          console.log("Form successfully sent to Google Sheet.");
+        } catch (error) {
+          console.error("Error sending to Google Sheets:", error);
+          // 雖然出錯，但為了家長體驗，我們依然允許生成獎狀
+        }
+      } else {
+        console.info("Google Apps Script URL is empty. Skipping data collection. Local certificate preview generated.");
+      }
+
+      // 2. 渲染獎狀
+      renderCertificate(name);
+      
+      // 3. 切換畫面動畫
+      setTimeout(() => {
+        formCard.classList.add('hidden');
+        previewCard.classList.remove('hidden');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalText;
+        
+        // 捲動至頂部
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 500);
+    });
+
+    // 返回按鈕
+    backBtn.addEventListener('click', function() {
+      previewCard.classList.add('hidden');
+      formCard.classList.remove('hidden');
+    });
+
+    // ==========================================
+    // 繪製證書邏輯 (HTML5 Canvas)
+    // ==========================================
+    function renderCertificate(name) {
+      // 取得微調設定值
+      const xPercent = parseInt(rangePosX.value) / 100;
+      const yPercent = parseInt(rangePosY.value) / 100;
+      const fontSize = parseInt(rangeFontSize.value);
+      const fontColor = colorFont.value;
+
+      if (isBgImageLoaded) {
+        // 使用 Canva 匯出的空白底圖
+        canvas.width = certBgImage.naturalWidth || 1920;
+        canvas.height = certBgImage.naturalHeight || 1357;
+        
+        // 1. 繪製背景底圖
+        ctx.drawImage(certBgImage, 0, 0, canvas.width, canvas.height);
+        
+        // 2. 繪製名字
+        drawName(name, canvas.width * xPercent, canvas.height * yPercent, fontSize, fontColor);
+      } else {
+        // 若找不到空白底圖，則繪製預設的高質感向量獎狀 (Vector Placeholder)
+        canvas.width = 1920;
+        canvas.height = 1357;
+        
+        const w = canvas.width;
+        const h = canvas.height;
+        
+        // A. 漸層背景 (淺灰色底)
+        let bgGrad = ctx.createRadialGradient(w/2, h/2, 100, w/2, h/2, h);
+        bgGrad.addColorStop(0, '#fbfcfd');
+        bgGrad.addColorStop(1, '#e9ecf0');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, w, h);
+        
+        // B. 左右深藍色裝飾面板與金色斜條
+        drawRibbonBorders(ctx, w, h);
+        
+        // C. 繪製頂部獎牌
+        drawGoldMedal(ctx, w/2, 220);
+        
+        // D. 標題文字
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillStyle = '#000000';
+        ctx.font = "bold 80px 'Noto Serif TC', serif";
+        ctx.fillText("最佳教育夥伴獎", w/2, 450);
+        
+        // E. 繪製名字
+        drawName(name, w * xPercent, h * yPercent, fontSize, fontColor);
+        
+        // F. 感謝內文
+        ctx.fillStyle = '#2c3e50';
+        ctx.font = "400 38px 'Noto Serif TC', serif";
+        
+        const textLines = [
+          "感謝您在過去兩年對敬修老師的教學給予的支持與協助。您的信任和鼓勵是",
+          "班級持續進步的動力。感謝有您的共同努力，讓孩子擁有美好的學習經驗。",
+          "在教育孩子的旅途中，您是最佳的教育夥伴！"
+        ];
+        
+        let startY = h * 0.70;
+        const lineHeight = 65;
+        textLines.forEach((line, index) => {
+          ctx.fillText(line, w/2, startY + (index * lineHeight));
+        });
+      }
+    }
+
+    // 繪製家長姓名的函式
+    function drawName(name, x, y, size, color) {
+      ctx.save();
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      
+      // 使用 Noto Serif TC (標楷體或宋體)
+      ctx.font = `900 ${size}px 'Noto Serif TC', 'KaiTi', 'BiauKai', serif`;
+      
+      // 為了有立體質感，可加上微弱陰影
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+      
+      // 金色漸層效果 (更精緻)
+      let textGrad = ctx.createLinearGradient(x - 100, y - 50, x + 100, y + 50);
+      textGrad.addColorStop(0, color); // 主色
+      textGrad.addColorStop(0.5, lightenColor(color, 20)); // 中間亮處
+      textGrad.addColorStop(1, color); // 尾部主色
+      
+      ctx.fillStyle = textGrad;
+      ctx.fillText(name, x, y);
+      ctx.restore();
+    }
+
+    // ==========================================
+    // 向量裝飾繪製輔助 (無 blank_cert.png 時的備份方案)
+    // ==========================================
+    function drawRibbonBorders(ctx, w, h) {
+      // 左側深藍板
+      ctx.fillStyle = '#112233';
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(w * 0.15, 0);
+      ctx.lineTo(0, h * 0.6);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.4);
+      ctx.lineTo(w * 0.15, h);
+      ctx.lineTo(0, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // 右側深藍板
+      ctx.beginPath();
+      ctx.moveTo(w, 0);
+      ctx.lineTo(w * 0.85, 0);
+      ctx.lineTo(w, h * 0.6);
+      ctx.closePath();
+      ctx.fill();
+      
+      ctx.beginPath();
+      ctx.moveTo(w, h * 0.4);
+      ctx.lineTo(w * 0.85, h);
+      ctx.lineTo(w, h);
+      ctx.closePath();
+      ctx.fill();
+
+      // 左側金色線條
+      ctx.strokeStyle = '#d4af37';
+      ctx.lineWidth = 15;
+      ctx.beginPath();
+      ctx.moveTo(w * 0.15, 0);
+      ctx.lineTo(0, h * 0.6);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.4);
+      ctx.lineTo(w * 0.15, h);
+      ctx.stroke();
+
+      // 右側金色線條
+      ctx.beginPath();
+      ctx.moveTo(w * 0.85, 0);
+      ctx.lineTo(w, h * 0.6);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(w, h * 0.4);
+      ctx.lineTo(w * 0.85, h);
+      ctx.stroke();
+    }
+
+    function drawGoldMedal(ctx, x, y) {
+      ctx.save();
+      // 外金色環
+      ctx.beginPath();
+      ctx.arc(x, y, 90, 0, Math.PI * 2);
+      let goldGrad = ctx.createRadialGradient(x, y, 20, x, y, 90);
+      goldGrad.addColorStop(0, '#f9d976');
+      goldGrad.addColorStop(0.7, '#e9b646');
+      goldGrad.addColorStop(1, '#8a6421');
+      ctx.fillStyle = goldGrad;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+      ctx.shadowBlur = 15;
+      ctx.fill();
+      
+      // 內深色環
+      ctx.beginPath();
+      ctx.arc(x, y, 75, 0, Math.PI * 2);
+      ctx.fillStyle = '#1a1a1a';
+      ctx.shadowBlur = 0;
+      ctx.fill();
+      
+      // 最內側星星與文字
+      ctx.fillStyle = '#e9b646';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = "bold 22px 'Outfit', sans-serif";
+      ctx.fillText("AWARD", x, y);
+      
+      // 畫三顆小星星
+      ctx.font = "14px 'Outfit'";
+      ctx.fillText("★ ★ ★", x, y + 25);
+      
+      // 麥穗意象 (簡化版線條)
+      ctx.strokeStyle = '#e9b646';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(x, y, 55, Math.PI * 0.3, Math.PI * 0.7);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(x, y, 55, Math.PI * 1.3, Math.PI * 1.7);
+      ctx.stroke();
+      
+      ctx.restore();
+    }
+
+    // 顏色亮度調高輔助函式 (用於漸層亮點)
+    function lightenColor(hex, percent) {
+      let num = parseInt(hex.replace("#",""), 16),
+      amt = Math.round(2.55 * percent),
+      R = (num >> 16) + amt,
+      G = (num >> 8 & 0x00FF) + amt,
+      B = (num & 0x0000FF) + amt;
+      return "#" + (0x1000000 + (R<255?R<0?0:R:255)*0x10000 + (G<255?G<0?0:G:255)*0x100 + (B<255?B<0?0:B:255)).toString(16).slice(1);
+    }
+
+    // ==========================================
+    // 微調事件與滑桿連動
+    // ==========================================
+    function updateValAndRedraw() {
+      valPosY.innerText = rangePosY.value + "%";
+      valPosX.innerText = rangePosX.value + "%";
+      valFontSize.innerText = rangeFontSize.value + "px";
+      
+      renderCertificate(currentParentName);
+    }
+
+    rangePosY.addEventListener('input', updateValAndRedraw);
+    rangePosX.addEventListener('input', updateValAndRedraw);
+    rangeFontSize.addEventListener('input', updateValAndRedraw);
+    colorFont.addEventListener('input', updateValAndRedraw);
+
+    // 收折微調面板
+    let isSettingsOpen = false;
+    const settingsContent = document.getElementById('settingsContent');
+    const toggleArrow = document.getElementById('toggleArrow');
+    
+    // 預設先隱藏內容
+    settingsContent.style.display = 'none';
+
+    window.toggleSettings = function() {
+      isSettingsOpen = !isSettingsOpen;
+      if (isSettingsOpen) {
+        settingsContent.style.display = 'grid';
+        toggleArrow.innerText = '▲';
+      } else {
+        settingsContent.style.display = 'none';
+        toggleArrow.innerText = '▼';
+      }
+    };
+
+    // ==========================================
+    // 獎狀下載功能
+    // ==========================================
+    downloadBtn.addEventListener('click', function() {
+      try {
+        const link = document.createElement('a');
+        link.download = `最佳教育夥伴獎_${currentParentName}.png`;
+        // 將 Canvas 轉為高畫質 PNG data URL
+        link.href = canvas.toDataURL('image/png', 1.0);
+        link.click();
+      } catch (err) {
+        console.error(err);
+        alert("【下載提醒】\n由於瀏覽器的安全隱私限制，當您直接從本機檔案 (file://) 雙擊開啟網頁時，瀏覽器會限制下載圖片（顯示為 Canvas Tainted 安全錯誤）。\n\n💡 解決方案：\n1. 請將此專案部署到網路上（如免費的 GitHub Pages 或 Vercel，步驟請看 README.md）。\n2. 或是使用本地開發伺服器（Local Server）開啟此網頁。\n\n請放心，當您將網址部署上網並分享給家長時，家長在線上開啟與下載是完全正常且順暢的！");
+      }
+    });
+
+  </script>
+</body>
+</html>
