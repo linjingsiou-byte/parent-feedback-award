@@ -54,10 +54,10 @@ function doPost(e) {
     }
     
     // 檢查必填欄位
-    if (!name || !email || !feedback) {
+    if (!name || !feedback) {
       return ContentService.createTextOutput(JSON.stringify({ 
         status: "error", 
-        message: "所有欄位皆為必填！" 
+        message: "姓名與回饋欄位皆為必填！" 
       }))
       .setMimeType(ContentService.MimeType.JSON)
       .setHeaders(headers);

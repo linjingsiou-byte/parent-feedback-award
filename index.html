@@ -362,11 +362,7 @@
           <input type="text" id="parentName" placeholder="請輸入您的姓名（將印製於獎狀上）" required autocomplete="name">
         </div>
         
-        <div class="form-group">
-          <label for="parentEmail">電子郵件信箱 <span class="required-tag">*</span></label>
-          <input type="email" id="parentEmail" placeholder="example@email.com（用於寄送或備份）" required autocomplete="email">
-        </div>
-        
+
         <div class="form-group">
           <label for="feedbackText">給老師的回饋 <span class="required-tag">*</span></label>
           <textarea id="feedbackText" placeholder="寫下這兩年帶班過程中，您想對老師說的話、支持或建議..." required></textarea>
@@ -501,7 +497,6 @@
       e.preventDefault();
       
       const name = document.getElementById('parentName').value.trim();
-      const email = document.getElementById('parentEmail').value.trim();
       const feedback = document.getElementById('feedbackText').value.trim();
       
       currentParentName = name;
@@ -521,7 +516,7 @@
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ name, email, feedback })
+            body: JSON.stringify({ name, feedback })
           });
           console.log("Form successfully sent to Google Sheet.");
         } catch (error) {
